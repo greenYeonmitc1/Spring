@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="mapper.board">
+	<!-- 자바의 get,set메서드 변수명과 MySQL DB의 컬럼명이 다를 때 사용 -->
+	<resultMap type="board" id="boardResult">
+		<result property="boardNo" column="board_no" />
+		<result property="boardType" column="board_type" />
+		<result property="title" column="title" />
+		<result property="writer" column="writer" />
+		<result property="content" column="content" />
+		<result property="ref" column="ref" />
+		<result property="reStep" column="re_step" />
+		<result property="reLevel" column="re_level" />
+	</resultMap>
+
+	<select id="getBoardCount" resultType="int">
+		<![CDATA[
+			SELECT COUNT(*) FROM board; 
+		]]>
+	</select>
+	
+	<select id="getMaxBoardNo" resultType="int">
+		<![CDATA[
+			SELECT MAX(board_no) FROM board;
+		]]>
+	</select>
+	
+	<select id="getMaxBoardRef" resultType="int">
+		<![CDATA[
+			SELECT MAX(ref) FROM board;
+		]]>
+	</select>
+	
+	<select id="writeBoard" parameterType="board">
+		<![CDATA[
+			INSERT INTO board (board_type, title, writer, content, ref, re_step, re_level)
+			VALUES(#{boardType}, #{title}, #{writer}, #{content}, #{ref}, 0, 0);
+		]]>
+	</select>
+	
+	<select id="getAllBoard" resultMap="boardResult">
+		<![CDATA[
+			SELECT * FROM board;
+		]]>
+	</select>
+	
+	<select id="getOneBoard" parameterType="int" resultMap="boardResult">
+		<![CDATA[
+			SELECT * FROM board
+			WHERE board_no=#{boardNo};
+		]]>
+	</select>
+	
+	<!-- 
+		collection = 리스트로 데이터를 처리할 경우 list로 작성한다.
+		item = 별칭 설정을 해준다.
+		open = 리스트의 값이 시작하기 전에 ( 열린괄호가 열리게 되고
+		separator = 리스트의 값이 한 번씩 반복문을 거칠 때마다 ,가 찍히게 된다.
+		close = 반복이 끝나면 ) 닫힌괄호가 쓰인다.
+	 -->
+	<select id="getBoardListForType" parameterType="java.util.ArrayList" resultMap="boardResult">
+		SELECT * FROM board
+		WHERE board_type IN
+		<foreach collection="list" item="check" open="(" close=")" separator=",">
+		#{check}
+		</foreach>
+	</select>
+	
+	
+</mapper>
+
+
+
+
+
+
